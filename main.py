@@ -79,6 +79,8 @@ pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((gW, gH))
 pygame.display.set_caption('Conways Game Of Life - By Aya')
+ico = pygame.image.load('res/icon.png')
+pygame.display.set_icon(ico)
 myfont = pygame.font.SysFont('Arial', 30)
 pygame.mixer.music.load("res/pop.flac")
 
