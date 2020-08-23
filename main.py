@@ -80,12 +80,11 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((gW, gH))
 pygame.display.set_caption('Conways Game Of Life - By Aya')
 myfont = pygame.font.SysFont('Arial', 30)
-pygame.mixer.music.load("pop.flac")
+pygame.mixer.music.load("res/pop.flac")
 
 # cells loop
 cells = pygame.sprite.Group()
 cellarr = {}
-
 
 def buildGame():
     xpos = (size / 2) - 1
@@ -102,7 +101,9 @@ def buildGame():
 
 buildGame()
 # main loop
+paint_mode = False
 while True:
+    p = pygame.mouse.get_pressed()
     e = pygame.event.poll()
     if not running:
         clock.tick(140)
@@ -110,13 +111,14 @@ while True:
         clock.tick(tick)
     if e.type == pygame.QUIT:
         break
-    elif e.type == pygame.MOUSEBUTTONDOWN and not running:
-        ex, ey = e.pos
+    elif pygame.mouse.get_pressed()[0] and not running:
+        ex, ey = pygame.mouse.get_pos()
         for c in cellarr:
             cell = cellarr[c]
-            if cell.rect.collidepoint(ex, ey):
-                cell.updateC()
-                break
+            if not cell.alive:
+                if cell.rect.collidepoint(ex, ey):
+                    cell.updateC()
+                    break
     if e.type == pygame.KEYDOWN:
         key_name = pygame.key.name(e.key)
         if key_name == "space":
