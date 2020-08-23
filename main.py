@@ -1,4 +1,5 @@
 import pygame
+import json
 
 # variables
 size = 20
@@ -103,6 +104,15 @@ def buildGame():
             xpos += size
         ypos += size
         xpos = (size / 2) - 1
+
+def saveGame():
+    output = {}
+    for c in cellarr:
+        cell = cellarr[c]
+        output[c] = cell.alive
+    with open("save.aya", "r") as f:
+        json.dump(output, f, indent=4)
+
 
 
 buildGame()
