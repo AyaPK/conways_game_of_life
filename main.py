@@ -73,6 +73,20 @@ class Brick(pygame.sprite.Sprite):
         offset = (size / 2) - 1
         pygame.draw.rect(screen, (20,20,20), (self.rect.center[0]-offset, self.rect.center[1]-offset, size, size), 1)
 
+    def highlight(self, c):
+        if pygame.sprite.spritecollideany(mouse, m, False):
+            print("Works")
+
+class Cursor(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([1, 1])
+        self.rect = self.image.get_rect()
+        self.rect.center = [0, 0]
+
+    def move(self):
+        self.rect.center = pygame.mouse.get_pos()
+
 
 # build game
 pygame.init()
@@ -83,6 +97,9 @@ ico = pygame.image.load('res/icon.png')
 pygame.display.set_icon(ico)
 myfont = pygame.font.SysFont('Arial', 30)
 pygame.mixer.music.load("res/pop.flac")
+mouse = Cursor()
+m = pygame.sprite.Group()
+m.add(mouse)
 
 # cells loop
 cells = pygame.sprite.Group()
@@ -107,6 +124,7 @@ paint_mode = False
 while True:
     p = pygame.mouse.get_pressed()
     e = pygame.event.poll()
+    mouse.update()
     if not running:
         clock.tick(140)
     else:
@@ -177,7 +195,9 @@ while True:
     if not running:
         for c in cellarr:
             cell = cellarr[c]
+            cell.highlight()
             cell.draw_rect()
+
     gentext = myfont.render("Generation: " + str(generation), True,
                             (255, 255, 255))
     screen.blit(gentext, (10, 10))
