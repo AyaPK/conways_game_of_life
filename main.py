@@ -92,7 +92,8 @@ class Brick(pygame.sprite.Sprite):
 class Cursor(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([size, size])
+        self.image = pygame.Surface([1, 1])
+        self.image.fill((255,0,0))
         self.rect = self.image.get_rect()
         self.rect.center = pygame.mouse.get_pos()
     def move(self):
@@ -194,7 +195,8 @@ def loadGame():
     except FileNotFoundError:
         pass
 
-
+c = pygame.sprite.Group()
+c.add(cursor)
 buildGame()
 # main loop
 paint_mode = False
@@ -223,12 +225,10 @@ while True:
     # Removes a node when ctrl+clicked
     elif pygame.mouse.get_pressed()[
         0] and not running and pygame.key.get_mods() & pygame.KMOD_LCTRL:
-        ex, ey = pygame.mouse.get_pos()
-        for c in cellarr:
-            cell = cellarr[c]
+        if pygame.sprite.spritecollideany(cursor, cells, False):
+            cell = pygame.sprite.spritecollideany(cursor, cells, False)
             if cell.alive:
-                if cell.rect.collidepoint(ex, ey):
-                    cell.updateC()
+                cell.updateC()
 
     # Performs an action if a key is pressed
     if e.type == pygame.KEYDOWN:
