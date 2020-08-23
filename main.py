@@ -85,9 +85,19 @@ class Brick(pygame.sprite.Sprite):
     def draw_rect(self):
         offset = (size / 2) - 1
         pygame.draw.rect(screen, (20, 20, 20), (
-        self.rect.center[0] - offset, self.rect.center[1] - offset, size, size),
+            self.rect.center[0] - offset, self.rect.center[1] - offset, size,
+            size),
                          1)
 
+class Cursor(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([size, size])
+        self.rect = self.image.get_rect()
+        self.rect.center = pygame.mouse.get_pos()
+    def move(self):
+        pos = pygame.mouse.get_pos()
+        self.rect.center = pos
 
 # build game
 pygame.init()
@@ -98,6 +108,7 @@ ico = pygame.image.load('res/icon.png')
 pygame.display.set_icon(ico)
 myfont = pygame.font.SysFont('Arial', 30)
 pygame.mixer.music.load("res/pop.flac")
+cursor = Cursor()
 
 # cells loop
 cells = pygame.sprite.Group()
@@ -105,6 +116,10 @@ cellarr = {}
 
 
 def buildGame():
+    global cells
+    global cellarr
+    cells = pygame.sprite.Group()
+    cellarr = {}
     xpos = (size / 2) - 1
     ypos = (size / 2) - 1
     for y in range(int(gH / size)):
@@ -121,8 +136,8 @@ def saveGame():
     try:
         tosave = Path(filedialog.asksaveasfilename(defaultextension=".aya",
                                                    filetypes=(
-                                                   ("Aya file", "*.aya"),
-                                                   ("All Files", "*.*"))))
+                                                       ("Aya file", "*.aya"),
+                                                       ("All Files", "*.*"))))
         tosave.touch(exist_ok=True)
         inst_line_1 = myfont.render(
             "Saving, please wait...", True,
@@ -149,6 +164,8 @@ def loadGame():
     global running
     global gW
     global gH
+    global cells
+    global cellarr
     try:
         with open(filedialog.askopenfilename(defaultextension=".aya",
                                              filetypes=(("Aya file", "*.aya"),
@@ -160,7 +177,8 @@ def loadGame():
             gW, gH = size * mult, size * mult
             pygame.display.set_mode((gW, gH))
             buildGame()
-
+            cells = pygame.sprite.Group()
+            cellarr = {}
             xpos = (size / 2) - 1
             ypos = (size / 2) - 1
             for y in range(int(gH / size)):
@@ -185,8 +203,9 @@ while True:
     # The main loop first checks the status of the mouse/keyboard and then sets the FPS as appropriate
     p = pygame.mouse.get_pressed()
     e = pygame.event.poll()
+    cursor.move()
     if not running:
-        clock.tick(140)
+        clock.tick(60)
     else:
         clock.tick(tick)
     if e.type == pygame.QUIT:
@@ -195,12 +214,11 @@ while True:
     # Places a node when clicked
     elif pygame.mouse.get_pressed()[
         0] and not running and not pygame.key.get_mods() & pygame.KMOD_LCTRL:
-        ex, ey = pygame.mouse.get_pos()
-        for c in cellarr:
-            cell = cellarr[c]
+        if pygame.sprite.spritecollideany(cursor, cells, False):
+            cell = pygame.sprite.spritecollideany(cursor, cells, False)
             if not cell.alive:
-                if cell.rect.collidepoint(ex, ey):
-                    cell.updateC()
+                cell.updateC()
+
 
     # Removes a node when ctrl+clicked
     elif pygame.mouse.get_pressed()[
@@ -240,8 +258,6 @@ while True:
             gW, gH = size * mult, size * mult
             pygame.display.set_mode((gW, gH))
             buildGame()
-        elif key_name == "q":
-            print(cellarr)
         elif key_name == "s":
             if not running:
                 saveGame()
