@@ -9,7 +9,7 @@ bgC = (0, 0, 0)
 fgC = (255, 255, 0)
 running = False
 generation = 0
-tick = 2
+tick = 10
 alldead = False
 
 
@@ -111,14 +111,20 @@ while True:
         clock.tick(tick)
     if e.type == pygame.QUIT:
         break
-    elif pygame.mouse.get_pressed()[0] and not running:
+    elif pygame.mouse.get_pressed()[0] and not running and not pygame.key.get_mods() & pygame.KMOD_LCTRL:
         ex, ey = pygame.mouse.get_pos()
         for c in cellarr:
             cell = cellarr[c]
             if not cell.alive:
                 if cell.rect.collidepoint(ex, ey):
                     cell.updateC()
-                    break
+    elif pygame.mouse.get_pressed()[0] and not running and pygame.key.get_mods() & pygame.KMOD_LCTRL:
+        ex, ey = pygame.mouse.get_pos()
+        for c in cellarr:
+            cell = cellarr[c]
+            if cell.alive:
+                if cell.rect.collidepoint(ex, ey):
+                    cell.updateC()
     if e.type == pygame.KEYDOWN:
         key_name = pygame.key.name(e.key)
         if key_name == "space":
