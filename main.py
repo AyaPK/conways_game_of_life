@@ -64,11 +64,14 @@ class Brick(pygame.sprite.Sprite):
                     pass
                 if alive_neighbours >= 4:
                     break
-
         if (alive_neighbours < 2 or alive_neighbours > 3) and self.alive:
             self.will_die = True
         elif alive_neighbours == 3 and not self.alive:
             self.will_be_born = True
+
+    def draw_rect(self):
+        offset = (size / 2) - 1
+        pygame.draw.rect(screen, (20,20,20), (self.rect.center[0]-offset, self.rect.center[1]-offset, size, size), 1)
 
 
 # build game
@@ -157,7 +160,12 @@ while True:
             running = False
         generation += 1
 
+
     cells.draw(screen)
+    if not running:
+        for c in cellarr:
+            cell = cellarr[c]
+            cell.draw_rect()
     gentext = myfont.render("Generation: " + str(generation), True,
                             (255, 255, 255))
     screen.blit(gentext, (10, 10))
