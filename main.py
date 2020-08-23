@@ -3,14 +3,15 @@ import pygame
 # variables
 size = 20
 mult = 50
-gW = size*mult
-gH = size*mult
-bgC = (0,0,0)
-fgC = (255,255,0)
+gW = size * mult
+gH = size * mult
+bgC = (0, 0, 0)
+fgC = (255, 255, 0)
 running = False
 generation = 0
 tick = 2
 alldead = False
+
 
 # objects
 class Brick(pygame.sprite.Sprite):
@@ -50,15 +51,14 @@ class Brick(pygame.sprite.Sprite):
             self.image.fill(self.c)
             self.will_die = False
 
-
-    def checkNeighbours(self):
+    def check_neighbours(self):
         alive_neighbours = 0
-        for y in range(self.y-1, self.y+2):
-            for x in range(self.x-1, self.x+2):
+        for y in range(self.y - 1, self.y + 2):
+            for x in range(self.x - 1, self.x + 2):
                 if x == self.x and y == self.y:
                     continue
                 try:
-                    if cellarr[str(x)+","+str(y)].alive:
+                    if cellarr[str(x) + "," + str(y)].alive:
                         alive_neighbours += 1
                 except:
                     pass
@@ -81,17 +81,20 @@ pygame.mixer.music.load("pop.flac")
 # cells loop
 cells = pygame.sprite.Group()
 cellarr = {}
+
+
 def buildGame():
-    xpos = (size/2)-1
-    ypos = (size/2)-1
-    for y in range(int(gH/size)):
-        for x in range(int(gW/size)):
+    xpos = (size / 2) - 1
+    ypos = (size / 2) - 1
+    for y in range(int(gH / size)):
+        for x in range(int(gW / size)):
             cell = Brick(xpos, ypos, bgC, x, y)
             cells.add(cell)
-            cellarr[str(x)+","+str(y)] = cell
+            cellarr[str(x) + "," + str(y)] = cell
             xpos += size
         ypos += size
-        xpos = (size/2)-1
+        xpos = (size / 2) - 1
+
 
 buildGame()
 # main loop
@@ -129,12 +132,12 @@ while True:
             running = False
         elif key_name == "up":
             mult += 1
-            gW, gH = size*mult, size*mult
+            gW, gH = size * mult, size * mult
             pygame.display.set_mode((gW, gH))
             buildGame()
         elif key_name == "down":
             mult -= 1
-            gW, gH = size*mult, size*mult
+            gW, gH = size * mult, size * mult
             pygame.display.set_mode((gW, gH))
             buildGame()
     if running:
@@ -143,7 +146,7 @@ while True:
             cell = cellarr[c]
             if cell.alive:
                 alive += 1
-            cell.checkNeighbours()
+            cell.check_neighbours()
         for c in cellarr:
             cell = cellarr[c]
             if cell.will_be_born:
@@ -159,9 +162,9 @@ while True:
                             (255, 255, 255))
     screen.blit(gentext, (10, 10))
     speedtext = myfont.render("Speed: " + str(tick), True,
-                            (255, 255, 255))
+                              (255, 255, 255))
     screen.blit(speedtext, (10, 40))
     pausetext = myfont.render("Paused: " + str(not running), True,
-                            (255, 255, 255))
+                              (255, 255, 255))
     screen.blit(pausetext, (10, 70))
     pygame.display.flip()
