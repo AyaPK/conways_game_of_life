@@ -19,6 +19,7 @@ running = False
 generation = 0
 tick = 10
 alldead = False
+showins = True
 
 
 # objects
@@ -113,41 +114,47 @@ def buildGame():
         xpos = (size / 2) - 1
 
 def saveGame():
-    tosave = Path(filedialog.asksaveasfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))))
-    tosave.touch(exist_ok=True)
-    with open(tosave, "r") as f:
-        output = {}
-        output["con"] = {
-            "tick": tick,
-            "mult": mult
-        }
-        for c in cellarr:
-            cell = cellarr[c]
-            output[c] = cell.alive
-        with open(tosave, "w") as w:
-            json.dump(output, w, indent=4)
+    try:
+        tosave = Path(filedialog.asksaveasfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))))
+        tosave.touch(exist_ok=True)
+        with open(tosave, "r") as f:
+            output = {}
+            output["con"] = {
+                "tick": tick,
+                "mult": mult
+            }
+            for c in cellarr:
+                cell = cellarr[c]
+                output[c] = cell.alive
+            with open(tosave, "w") as w:
+                json.dump(output, w, indent=4)
+    except PermissionError:
+        pass
 
 def loadGame():
     global tick
     global mult
-    with open(filedialog.askopenfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))), "r") as f:
-        data = json.load(f)
-        tick = data["con"]["tick"]
-        mult = data["con"]["mult"]
-        gW, gH = size * mult, size * mult
-        pygame.display.set_mode((gW, gH))
-        buildGame()
+    try:
+        with open(filedialog.askopenfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))), "r") as f:
+            data = json.load(f)
+            tick = data["con"]["tick"]
+            mult = data["con"]["mult"]
+            gW, gH = size * mult, size * mult
+            pygame.display.set_mode((gW, gH))
+            buildGame()
 
-        xpos = (size / 2) - 1
-        ypos = (size / 2) - 1
-        for y in range(int(gH / size)):
-            for x in range(int(gW / size)):
-                cell = Brick(xpos, ypos, bgC, x, y, data[str(x)+","+str(y)])
-                cells.add(cell)
-                cellarr[str(x) + "," + str(y)] = cell
-                xpos += size
-            ypos += size
             xpos = (size / 2) - 1
+            ypos = (size / 2) - 1
+            for y in range(int(gH / size)):
+                for x in range(int(gW / size)):
+                    cell = Brick(xpos, ypos, bgC, x, y, data[str(x)+","+str(y)])
+                    cells.add(cell)
+                    cellarr[str(x) + "," + str(y)] = cell
+                    xpos += size
+                ypos += size
+                xpos = (size / 2) - 1
+    except FileNotFoundError:
+        pass
 
 
 
@@ -212,6 +219,8 @@ while True:
         elif key_name == "l":
             if not running:
                 loadGame()
+        elif key_name == "i":
+            showins = not showins
     if running:
         alive = 0
         for c in cellarr:
@@ -246,19 +255,19 @@ while True:
         pausetext = myfont.render("Paused", True,
                                   (255, 255, 255))
         screen.blit(pausetext, (10, 70))
-        inst_line_1 = myfont.render("Click the screen to place starting nodes", True,
+    if not running and showins:
+        pausetext = myfont.render("Paused", True,
                                   (255, 255, 255))
-        screen.blit(inst_line_1, (20, gH-130))
-        inst_line_2 = myfont.render("Hold control to remove clicked nodes",
-                                    True,
-                                    (255, 255, 255))
-        screen.blit(inst_line_2, (20, gH-100))
-        inst_line_3 = myfont.render("Hit space to start/pause the game",
-                                    True,
-                                    (255, 255, 255))
-        screen.blit(inst_line_3, (20, gH-70))
-        inst_line_4 = myfont.render("Hit R to reset the game",
-                                    True,
-                                    (255, 255, 255))
-        screen.blit(inst_line_4, (20, gH - 40))
+        screen.blit(pausetext, (10, 70))
+        ins = ["I: show/hide instructions", "Click: Place node",
+               "Ctrl+Click: Hide Node", "Space: Start/Pause game",
+               "R: Reset game", "Up/Down: Resize game", "Left/Right: Change speed",
+               "S: Save board", "L: Load board"]
+        start = gH-400
+        for i in ins:
+            inst_line_1 = myfont.render(
+                i, True,
+                (255, 255, 255))
+            screen.blit(inst_line_1, (20, start))
+            start += 30
     pygame.display.flip()
