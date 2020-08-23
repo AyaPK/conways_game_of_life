@@ -78,6 +78,7 @@ class Brick(pygame.sprite.Sprite):
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((gW, gH))
+pygame.display.set_caption('Conways Game Of Life - By Aya')
 myfont = pygame.font.SysFont('Arial', 30)
 pygame.mixer.music.load("pop.flac")
 
@@ -158,6 +159,7 @@ while True:
                 cell.kill()
         if alive < 1:
             running = False
+            generation -= 1
         generation += 1
 
 
