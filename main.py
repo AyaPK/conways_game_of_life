@@ -182,7 +182,19 @@ while True:
     speedtext = myfont.render("Speed: " + str(tick), True,
                               (255, 255, 255))
     screen.blit(speedtext, (10, 40))
-    pausetext = myfont.render("Paused: " + str(not running), True,
-                              (255, 255, 255))
-    screen.blit(pausetext, (10, 70))
+    if not running:
+        pausetext = myfont.render("Paused", True,
+                                  (255, 255, 255))
+        screen.blit(pausetext, (10, 70))
+        inst_line_1 = myfont.render("Click the screen to place starting nodes", True,
+                                  (255, 255, 255))
+        screen.blit(inst_line_1, (20, gH-100))
+        inst_line_2 = myfont.render("Hold control to remove clicked nodes",
+                                    True,
+                                    (255, 255, 255))
+        screen.blit(inst_line_2, (20, gH-70))
+        inst_line_3 = myfont.render("Hit space to start/pause the game",
+                                    True,
+                                    (255, 255, 255))
+        screen.blit(inst_line_3, (20, gH-40))
     pygame.display.flip()
