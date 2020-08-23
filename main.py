@@ -1,5 +1,11 @@
 import pygame
 import json
+import tkinter as tk
+from tkinter import filedialog
+from pathlib import Path
+
+root = tk.Tk()
+root.withdraw()
 
 # variables
 size = 20
@@ -106,7 +112,9 @@ def buildGame():
         xpos = (size / 2) - 1
 
 def saveGame():
-    with open("save.aya", "r") as f:
+    tosave = Path(filedialog.asksaveasfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))))
+    tosave.touch(exist_ok=True)
+    with open(tosave, "r") as f:
         output = {}
         output["con"] = {
             "tick": tick,
@@ -115,8 +123,31 @@ def saveGame():
         for c in cellarr:
             cell = cellarr[c]
             output[c] = cell.alive
-        with open("save.aya", "w") as w:
+        with open(tosave, "w") as w:
             json.dump(output, w, indent=4)
+
+def loadGame():
+    global tick
+    global mult
+    with open(filedialog.askopenfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))), "r") as f:
+        data = json.load(f)
+        tick = data["con"]["tick"]
+        mult = data["con"]["mult"]
+        gW, gH = size * mult, size * mult
+        pygame.display.set_mode((gW, gH))
+        buildGame()
+
+        xpos = (size / 2) - 1
+        ypos = (size / 2) - 1
+        for y in range(int(gH / size)):
+            for x in range(int(gW / size)):
+                cell = Brick(xpos, ypos, bgC, x, y, data[str(x)+","+str(y)])
+                cells.add(cell)
+                cellarr[str(x) + "," + str(y)] = cell
+                xpos += size
+            ypos += size
+            xpos = (size / 2) - 1
+
 
 
 buildGame()
@@ -177,6 +208,9 @@ while True:
         elif key_name == "s":
             if not running:
                 saveGame()
+        elif key_name == "l":
+            if not running:
+                loadGame()
     if running:
         alive = 0
         for c in cellarr:
