@@ -134,6 +134,9 @@ def saveGame():
 def loadGame():
     global tick
     global mult
+    global running
+    global gW
+    global gH
     try:
         with open(filedialog.askopenfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))), "r") as f:
             data = json.load(f)
@@ -153,6 +156,7 @@ def loadGame():
                     xpos += size
                 ypos += size
                 xpos = (size / 2) - 1
+            running = False
     except FileNotFoundError:
         pass
 
@@ -260,7 +264,7 @@ while True:
                                   (255, 255, 255))
         screen.blit(pausetext, (10, 70))
         ins = ["I: show/hide instructions", "Click: Place node",
-               "Ctrl+Click: Hide Node", "Space: Start/Pause game",
+               "Ctrl+Click: Delete Node", "Space: Start/Pause game",
                "R: Reset game", "Up/Down: Resize game", "Left/Right: Change speed",
                "S: Save board", "L: Load board"]
         start = gH-400
