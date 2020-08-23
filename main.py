@@ -188,13 +188,17 @@ while True:
         screen.blit(pausetext, (10, 70))
         inst_line_1 = myfont.render("Click the screen to place starting nodes", True,
                                   (255, 255, 255))
-        screen.blit(inst_line_1, (20, gH-100))
+        screen.blit(inst_line_1, (20, gH-130))
         inst_line_2 = myfont.render("Hold control to remove clicked nodes",
                                     True,
                                     (255, 255, 255))
-        screen.blit(inst_line_2, (20, gH-70))
+        screen.blit(inst_line_2, (20, gH-100))
         inst_line_3 = myfont.render("Hit space to start/pause the game",
                                     True,
                                     (255, 255, 255))
-        screen.blit(inst_line_3, (20, gH-40))
+        screen.blit(inst_line_3, (20, gH-70))
+        inst_line_4 = myfont.render("Hit R to reset the game",
+                                    True,
+                                    (255, 255, 255))
+        screen.blit(inst_line_4, (20, gH - 40))
     pygame.display.flip()
