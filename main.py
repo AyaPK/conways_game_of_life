@@ -294,15 +294,16 @@ while True:
         for c in cellarr:
             cell = cellarr[c]
             cell.draw_rect()
+        pausetext = myfont.render("Paused", True,
+                                  (255, 255, 255))
+        screen.blit(pausetext, (10, 70))
     gentext = myfont.render("Generation: " + str(generation), True,
                             (255, 255, 255))
     screen.blit(gentext, (10, 10))
     speedtext = myfont.render("Speed: " + str(tick), True,
                               (255, 255, 255))
     screen.blit(speedtext, (10, 40))
-    pausetext = myfont.render("Paused", True,
-                              (255, 255, 255))
-    screen.blit(pausetext, (10, 70))
+
 
     # Shows instructions if they are toggled on
     if not running and showins:
