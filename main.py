@@ -84,7 +84,9 @@ class Brick(pygame.sprite.Sprite):
 
     def draw_rect(self):
         offset = (size / 2) - 1
-        pygame.draw.rect(screen, (20,20,20), (self.rect.center[0]-offset, self.rect.center[1]-offset, size, size), 1)
+        pygame.draw.rect(screen, (20, 20, 20), (
+        self.rect.center[0] - offset, self.rect.center[1] - offset, size, size),
+                         1)
 
 
 # build game
@@ -101,6 +103,7 @@ pygame.mixer.music.load("res/pop.flac")
 cells = pygame.sprite.Group()
 cellarr = {}
 
+
 def buildGame():
     xpos = (size / 2) - 1
     ypos = (size / 2) - 1
@@ -113,10 +116,18 @@ def buildGame():
         ypos += size
         xpos = (size / 2) - 1
 
+
 def saveGame():
     try:
-        tosave = Path(filedialog.asksaveasfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))))
+        tosave = Path(filedialog.asksaveasfilename(defaultextension=".aya",
+                                                   filetypes=(
+                                                   ("Aya file", "*.aya"),
+                                                   ("All Files", "*.*"))))
         tosave.touch(exist_ok=True)
+        inst_line_1 = myfont.render(
+            "Saving, please wait...", True,
+            (255, 255, 255))
+        screen.blit(inst_line_1, (500, 100))
         with open(tosave, "r") as f:
             output = {}
             output["con"] = {
@@ -131,6 +142,7 @@ def saveGame():
     except PermissionError:
         pass
 
+
 def loadGame():
     global tick
     global mult
@@ -138,7 +150,10 @@ def loadGame():
     global gW
     global gH
     try:
-        with open(filedialog.askopenfilename(defaultextension=".aya", filetypes=(("Aya file", "*.aya"),("All Files", "*.*"))), "r") as f:
+        with open(filedialog.askopenfilename(defaultextension=".aya",
+                                             filetypes=(("Aya file", "*.aya"),
+                                                        ("All Files", "*.*"))),
+                  "r") as f:
             data = json.load(f)
             tick = data["con"]["tick"]
             mult = data["con"]["mult"]
@@ -150,7 +165,8 @@ def loadGame():
             ypos = (size / 2) - 1
             for y in range(int(gH / size)):
                 for x in range(int(gW / size)):
-                    cell = Brick(xpos, ypos, bgC, x, y, data[str(x)+","+str(y)])
+                    cell = Brick(xpos, ypos, bgC, x, y,
+                                 data[str(x) + "," + str(y)])
                     cells.add(cell)
                     cellarr[str(x) + "," + str(y)] = cell
                     xpos += size
@@ -161,11 +177,12 @@ def loadGame():
         pass
 
 
-
 buildGame()
 # main loop
 paint_mode = False
 while True:
+
+    # The main loop first checks the status of the mouse/keyboard and then sets the FPS as appropriate
     p = pygame.mouse.get_pressed()
     e = pygame.event.poll()
     if not running:
@@ -174,20 +191,28 @@ while True:
         clock.tick(tick)
     if e.type == pygame.QUIT:
         break
-    elif pygame.mouse.get_pressed()[0] and not running and not pygame.key.get_mods() & pygame.KMOD_LCTRL:
+
+    # Places a node when clicked
+    elif pygame.mouse.get_pressed()[
+        0] and not running and not pygame.key.get_mods() & pygame.KMOD_LCTRL:
         ex, ey = pygame.mouse.get_pos()
         for c in cellarr:
             cell = cellarr[c]
             if not cell.alive:
                 if cell.rect.collidepoint(ex, ey):
                     cell.updateC()
-    elif pygame.mouse.get_pressed()[0] and not running and pygame.key.get_mods() & pygame.KMOD_LCTRL:
+
+    # Removes a node when ctrl+clicked
+    elif pygame.mouse.get_pressed()[
+        0] and not running and pygame.key.get_mods() & pygame.KMOD_LCTRL:
         ex, ey = pygame.mouse.get_pos()
         for c in cellarr:
             cell = cellarr[c]
             if cell.alive:
                 if cell.rect.collidepoint(ex, ey):
                     cell.updateC()
+
+    # Performs an action if a key is pressed
     if e.type == pygame.KEYDOWN:
         key_name = pygame.key.name(e.key)
         if key_name == "space":
@@ -225,6 +250,9 @@ while True:
                 loadGame()
         elif key_name == "i":
             showins = not showins
+
+    # If the game is running, checks every cell to see if it should live or die on the next generation
+    # Game gets paused if no cells will be alive on the next generation
     if running:
         alive = 0
         for c in cellarr:
@@ -243,8 +271,9 @@ while True:
             generation -= 1
         generation += 1
 
-
     cells.draw(screen)
+
+    # Draws a grid and displays the paused text if the game is no running
     if not running:
         for c in cellarr:
             cell = cellarr[c]
@@ -255,19 +284,21 @@ while True:
     speedtext = myfont.render("Speed: " + str(tick), True,
                               (255, 255, 255))
     screen.blit(speedtext, (10, 40))
-    if not running:
-        pausetext = myfont.render("Paused", True,
-                                  (255, 255, 255))
-        screen.blit(pausetext, (10, 70))
+    pausetext = myfont.render("Paused", True,
+                              (255, 255, 255))
+    screen.blit(pausetext, (10, 70))
+
+    # Shows instructions if they are toggled on
     if not running and showins:
         pausetext = myfont.render("Paused", True,
                                   (255, 255, 255))
         screen.blit(pausetext, (10, 70))
         ins = ["I: show/hide instructions", "Click: Place node",
                "Ctrl+Click: Delete Node", "Space: Start/Pause game",
-               "R: Reset game", "Up/Down: Resize game", "Left/Right: Change speed",
+               "R: Reset game", "Up/Down: Resize game",
+               "Left/Right: Change speed",
                "S: Save board", "L: Load board"]
-        start = gH-400
+        start = gH - 400
         for i in ins:
             inst_line_1 = myfont.render(
                 i, True,
