@@ -15,15 +15,19 @@ alldead = False
 
 # objects
 class Brick(pygame.sprite.Sprite):
-    def __init__(self, xp, yp, c, x, y):
+    def __init__(self, xp, yp, c, x, y, a):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([size, size])
-        self.image.fill(c)
+
         self.rect = self.image.get_rect()
         self.rect.center = [xp, yp]
         self.w, self.h, self.x, self.y = size, size, x, y
-        self.c = c
-        self.alive = False
+        self.alive = a
+        if self.alive:
+            self.c = fgC
+        else:
+            self.c = bgC
+        self.image.fill(self.c)
         self.will_die = False
         self.will_be_born = False
 
@@ -93,7 +97,7 @@ def buildGame():
     ypos = (size / 2) - 1
     for y in range(int(gH / size)):
         for x in range(int(gW / size)):
-            cell = Brick(xpos, ypos, bgC, x, y)
+            cell = Brick(xpos, ypos, bgC, x, y, False)
             cells.add(cell)
             cellarr[str(x) + "," + str(y)] = cell
             xpos += size
@@ -154,6 +158,8 @@ while True:
             gW, gH = size * mult, size * mult
             pygame.display.set_mode((gW, gH))
             buildGame()
+        elif key_name == "q":
+            print(cellarr)
     if running:
         alive = 0
         for c in cellarr:
