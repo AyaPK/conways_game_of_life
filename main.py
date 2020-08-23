@@ -106,13 +106,17 @@ def buildGame():
         xpos = (size / 2) - 1
 
 def saveGame():
-    output = {}
-    for c in cellarr:
-        cell = cellarr[c]
-        output[c] = cell.alive
     with open("save.aya", "r") as f:
-        json.dump(output, f, indent=4)
-
+        output = {}
+        output["con"] = {
+            "tick": tick,
+            "mult": mult
+        }
+        for c in cellarr:
+            cell = cellarr[c]
+            output[c] = cell.alive
+        with open("save.aya", "w") as w:
+            json.dump(output, w, indent=4)
 
 
 buildGame()
@@ -170,6 +174,9 @@ while True:
             buildGame()
         elif key_name == "q":
             print(cellarr)
+        elif key_name == "s":
+            if not running:
+                saveGame()
     if running:
         alive = 0
         for c in cellarr:
