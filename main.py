@@ -3,6 +3,7 @@ import json
 import tkinter as tk
 from tkinter import filedialog
 from pathlib import Path
+import hashlib
 
 root = tk.Tk()
 root.withdraw()
