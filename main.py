@@ -15,6 +15,7 @@ gW = size * mult
 gH = size * mult
 bgC = (0, 0, 0)
 fgC = (255, 255, 0)
+stopped = (255,0,0)
 running = False
 generation = 0
 tick = 10
@@ -39,6 +40,8 @@ class Brick(pygame.sprite.Sprite):
         self.image.fill(self.c)
         self.will_die = False
         self.will_be_born = False
+        self.moved = True
+        self.staycount = 0
 
     def updateC(self):
         if self.alive:
@@ -56,6 +59,8 @@ class Brick(pygame.sprite.Sprite):
             self.c = fgC
             self.image.fill(self.c)
             self.will_be_born = False
+
+
 
     def kill(self):
         if self.alive:
@@ -79,8 +84,18 @@ class Brick(pygame.sprite.Sprite):
                     break
         if (alive_neighbours < 2 or alive_neighbours > 3) and self.alive:
             self.will_die = True
+            self.moved = True
+            self.staycount = 0
+            return
         elif alive_neighbours == 3 and not self.alive:
             self.will_be_born = True
+            self.moved = True
+            self.staycount = 0
+            return
+        if self.alive:
+            self.staycount += 1
+            if self.staycount >= 10:
+                self.moved = False
 
     def draw_rect(self):
         offset = (size / 2) - 1
@@ -282,6 +297,9 @@ while True:
                 cell.born()
             elif cell.will_die:
                 cell.kill()
+            if not cell.moved:
+                cell.c = stopped
+                cell.image.fill(cell.c)
         if alive < 1:
             running = False
             generation -= 1
